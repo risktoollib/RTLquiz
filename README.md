@@ -11,3 +11,11 @@ Build to support delivery of:
 + Type  `learnr::run_tutorial("<tutorial name>",package = "RTLquiz")` to start the tutorial.
 
 `learnr::run_tutorial("getting-started",package = "RTLquiz")`
+
+## Installation
+
+**Latest Package**
+`devtools::install_github("risktoollib/RTLquiz")`
+
+**CRAN Stable**
+Not on CRAN yet.
