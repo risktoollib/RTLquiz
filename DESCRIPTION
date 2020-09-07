@@ -1,11 +1,16 @@
 Package: RTLquiz
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Learnr Tutorials
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Date: 2020-09-03
+Authors@R: c(person("Philippe", "Cote", email = "pcote@ualberta.ca", role = c("aut", "cre")))
+Description: Build to support delivery of Finance classes from one of the co-authors
+    of RTL at the [Alberta School of Business](https://www.ualberta.ca/business/index.html).
+License: GPL (>= 3)
+URL: https://github.com/risktoollib/RTLquiz
 Encoding: UTF-8
 LazyData: true
+Imports: 
+    learnr,
+    magrittr
+RoxygenNote: 7.1.1
