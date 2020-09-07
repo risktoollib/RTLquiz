@@ -1,0 +1,141 @@
+---
+title: "Getting Started"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Basics
+
+### Execution 
+
+```{r soft}
+quiz(
+  question("Which sofware executes the code?",
+    answer("R", correct = TRUE),
+    answer("RStudio"),
+    answer("Windows"),
+    answer("Mac")
+  ),
+  question("When you execute code, which RStudio pane(s) would you look to see if a variable has been defined?",
+    answer("Console", correct = TRUE),
+    answer("Document"),
+    answer("History"),
+    answer("Environment", correct = TRUE)
+  )
+)
+```
+
+### Creating Documents
+
+```{r docs}
+quiz(
+  question("You want to create a new document in RStudio, you:",
+    answer("go to the File > New File menu.", correct = TRUE),
+    answer("go to the File > New Project menu."),
+    answer("go to the Tools > Install Package Menu."),
+    answer("Type install.packages(<your document type>) in the console.")
+  ),
+  question("You want to write a report including analytics, you create a new file of type:",
+    answer(".Rproj"),
+    answer(".R"),
+    answer(".Rmd", correct = TRUE)
+  )
+)
+```
+
+### Data Type
+
+```{r str}
+quiz(
+  question("You loaded object z in your environment. What would you type to see what type of object it is?",
+    answer("summary(x)"),
+    answer("x"),
+    answer("RtellMe(x)"),
+    answer("str(x)", correct = TRUE)
+  )
+)
+```
+
+## Markdown Document
+
+You see this `R chunk` in a Markdown document:
+
+```{r, eval = FALSE, echo = T}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r quiz2}
+quiz(
+  question("What does it do?",
+    answer("**Display** and **not execute** the content"),
+    answer("**Not display** and ** not execute** the content"),
+    answer("**Not Display** the content of this specific chunk"),
+    answer("**Not Display** the content of all chunks", correct = TRUE)
+  )
+)
+```
+
+1. You are working in a new empty Rmd document.
+2. You type the following in your `console`:
+
+```{r, eval = F, echo = T}
+a <- 5
+```
+
+3. You confirm your `Environment` that `a = 5`. Everything is according to plan!
+4. You now write this chunk in your .Rmd document and press the `Knit` button. 
+
+```{r, eval = F, echo = T}
+b <- 10
+c <- a + b
+c
+```
+
+```{r knitobj}
+quiz(
+  question("What will be the result?",
+    answer("15"),
+    answer("c"),
+    answer("Error message which you read calmly", correct = TRUE)
+  )
+)
+```
+
+## My First Mistakes
+
+```{r ojbnotfound}
+quiz(
+  question("You see **Error: object 'x' not found** in your console. What do you do next?",
+    answer("Press the panic button in the RStudio menu."),
+    answer("Swear at yourself or your prof!"),
+    answer("Google what it means if you don't know", correct = T),
+    answer("Save your file, start a fresh session and run your .Rmd line by line until you find where x is defined or not defined.", correct = T)
+  )
+)
+```
+
+```{r startnewsession}
+quiz(
+  question("What is best practice when you start a new session to continue working on a .Rmd or .R document?",
+    answer("Recover your environment from the prior session."),
+    answer("Start all over again."),
+    answer("Start with a new clean session and run chunk by chunk or line by line your document until you reach where you left it.", correct = T)
+  )
+)
+```
+
+```{r workpractice}
+quiz(
+  question("What is most likely to land you in trouble when you write a .Rmd documment?",
+    answer("Spend two hours writing your code and then knit it."),
+    answer("Knit your document periodically to ensure that what you have done to date renders properly.", correct = T)
+  )
+)
+```
+
+
