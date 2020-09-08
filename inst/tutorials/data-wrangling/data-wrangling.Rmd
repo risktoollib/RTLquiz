@@ -1,0 +1,76 @@
+---
+title: "Data Wrangling"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Operators
+
+### Object Class 
+
+```{r class}
+quiz(
+  question("What functon would you use to describe the x object in your environment?",
+    answer("summary(x)"),
+    answer("View(x)"),
+    answer("str(x)", correct = TRUE),
+    answer("?x")
+  )
+)
+```
+
+### Piping
+
+This question deals with the `%>%` pipe operator?
+
+```{r pipe}
+quiz(
+  question("The pipe operator:",
+    answer("Allows one to smoke great tobacco."),
+    answer("Assigns the result of an operation to a variable."),
+    answer("Passes the output of left command into the input of the right command.", correct = TRUE)
+  )
+)
+```
+
+The `%>%` operator can simplifies greatly coding logic. 
+
+```{r logic}
+quiz(
+  question("When faced with a sequence of piping operators, best practice to learn is to:",
+    answer("Copy and paste the code provide by the Prof."),
+    answer("Create my own copy of it in a .Rmd document and display it nicely."),
+    answer("Be focused on executing each pipe one at a time with a view of understanding the input-transform-output sequence in terms of data class.", correct = TRUE)
+  )
+)
+```
+
+## Subsetting 
+
+### Select
+
+### Filter
+
+### Referencing by Position
+
+## Sorting
+
+## Parsing
+
+## Long vs Wide Data frames
+
+## Grouping
+
+## Lags
+
+## xts objects
+
+## APIs 
+
+
+
