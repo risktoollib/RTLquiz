@@ -7,19 +7,22 @@ runtime: shiny_prerendered
 ```{r setup, include=FALSE}
 library(learnr)
 knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
 ```
+
+The data displayed is from the `mtcars` dataset from `tidyverse`.
 
 ## Operators
 
 ### Object Class 
 
 ```{r class}
-quiz(
-  question("What functon would you use to describe the x object in your environment?",
-    answer("summary(x)"),
-    answer("View(x)"),
-    answer("str(x)", correct = TRUE),
-    answer("?x")
+learnr::quiz(
+  learnr::question("What function would you use to describe the x object class and structure in your environment?",
+    learnr::answer("summary(x)"),
+    learnr::answer("View(x)"),
+    learnr::answer("str(x)", correct = TRUE),
+    learnr::answer("?x")
   )
 )
 ```
@@ -29,36 +32,108 @@ quiz(
 This question deals with the `%>%` pipe operator?
 
 ```{r pipe}
-quiz(
-  question("The pipe operator:",
-    answer("Allows one to smoke great tobacco."),
-    answer("Assigns the result of an operation to a variable."),
-    answer("Passes the output of left command into the input of the right command.", correct = TRUE)
+learnr::quiz(
+  learnr::question("The pipe operator:",
+    learnr::answer("Allows one to smoke great tobacco."),
+    learnr::answer("Assigns the result of an operation to a variable."),
+    learnr::answer("Passes the output of left command into the input of the right command.", correct = TRUE)
   )
 )
 ```
 
 The `%>%` operator can simplifies greatly coding logic. 
 
-```{r logic}
-quiz(
-  question("When faced with a sequence of piping operators, best practice to learn is to:",
-    answer("Copy and paste the code provide by the Prof."),
-    answer("Create my own copy of it in a .Rmd document and display it nicely."),
-    answer("Be focused on executing each pipe one at a time with a view of understanding the input-transform-output sequence in terms of data class.", correct = TRUE)
+```{r pipelogic}
+learnr::quiz(
+  learnr::question("When faced with a sequence of piping operators, best practice to learn is to:",
+    learnr::answer("Copy and paste the code provide by the Prof."),
+    learnr::answer("Create my own copy of it in a .Rmd document and display it nicely."),
+    learnr::answer("Be focused on executing each pipe one at a time with a view of understanding the input-transform-output sequence in terms of data class.", correct = TRUE)
   )
 )
 ```
 
 ## Subsetting 
 
-### Select
+```{r subset}
+learnr::quiz(
+  learnr::question("Which dplyr function would you use to subset a data frame?",
+    learnr::answer("subset()"),
+    learnr::answer("select()"),
+    learnr::answer("filter()", correct = TRUE)
+  )
+)
+```
 
-### Filter
+## Mutate and Transmute
 
-### Referencing by Position
+```{r muttrans}
+learnr::quiz(
+  learnr::question("Select the TRUE statement(s) on what the functions do to a data frame.",
+    learnr::answer("`mutate()` deletes a column and transmute() append a column."),
+    learnr::answer("`transmute()` deletes a column and mutate() append a column."),
+    learnr::answer("`transmute()` only returns the column created.", correct = TRUE),
+    learnr::answer("`mutate()` returns the column created and existing columns.", correct = TRUE)
+  )
+)
+```
+
+## Select
+
+```{r,echo=FALSE}
+x = mtcars %>% dplyr::mutate(car = rownames(mtcars)) %>% dplyr::select(mpg,cyl,car,dplyr::everything()) %>% as_tibble()
+head(x)
+```
+
+```{r select}
+learnr::quiz(
+  learnr::question("Select the best command to re-order columns to show car first.",
+    learnr::answer("x %>% dplyr::select(car,mpg,cyl,disp,hp,drat,wt,qsec,vs)"),
+    learnr::answer("x %>% dplyr::select(car,everything)"),
+    learnr::answer("x %>% dplyr::select(car,...)"),
+    learnr::answer("x %>% dplyr::select(car,everything())", correct = TRUE)
+  )
+)
+```
+
+## Filter
+
+```{r, echo = F}
+x %>% dplyr::filter(mpg >30 & cyl >= 4)
+```
+
+You are interested in filtering cars with a mpg > 30 and cyl >= 4.
+
+```{r filter}
+learnr::quiz(
+  learnr::question("Which command(s) would give you the same information?",
+    learnr::answer("x %>% dplyr::filter(mpg >30 & cyl >= 4)", correct = TRUE),
+    learnr::answer("x %>% dplyr::filter(mpg >30 | cyl >= 4)"),
+    learnr::answer("x %>% dplyr::select(cat == CityCar)"),
+    learnr::answer("x %>% dplyr::filter(mpg >30, cyl >= 4)", correct = TRUE)
+  )
+)
+```
+
+You want to exclude cars with cyl = 8.
+
+```{r notequal}
+learnr::quiz(
+  learnr::question("Which command(s) is (are) correct?",
+    learnr::answer("x %>% dplyr::filter(cyl =! 8)"),
+    learnr::answer("x %>% dplyr::filter(!cyl == 8)", correct = TRUE),
+    learnr::answer("x %>% dplyr::filter(cyl != 8)", correct = TRUE),
+    learnr::answer("x %>% dplyr::filter(cyl <> 8)")
+  )
+)
+```
 
 ## Sorting
+
+```{r,echo = F}
+
+```
+
 
 ## Parsing
 
