@@ -61,6 +61,21 @@ learnr::quiz(
 )
 ```
 
+### Packages
+
+If you need to install a new package x for your new project, say a .Rmd document.
+
+```{r packages}
+learnr::quiz(
+  learnr::question("Select the correct statements. You should add the following in a chunk:",
+    learnr::answer("install.packages(x) ; library(x)"),
+    learnr::answer("install.packages(x)"),
+    learnr::answer("Run install.packages(x) in your console then add library(x) in your .Rmd", correct = TRUE)
+  )
+)
+```
+
+
 ## Markdown Document
 
 You see this `R chunk` in a Markdown document:
