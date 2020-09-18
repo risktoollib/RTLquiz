@@ -29,7 +29,7 @@ learnr::quiz(
 
 ## Piping
 
-This question deals with the `%>%` pipe operator?
+These questions deals with the `%>%` pipe operator?
 
 ```{r pipe}
 learnr::quiz(
@@ -41,6 +41,23 @@ learnr::quiz(
   )
 )
 ```
+
+You open a new `R` session, type `mtcars %>% dplyr::mutate(cyl = cyl +1)` and get this message:
+
+`Error in mtcars %>% dplyr::mutate(cyl = cyl + 1) : could not find function "%>%"`
+
+
+```{r pipelib}
+learnr::quiz(
+  learnr::question("What does it mean?",
+    learnr::answer("I don't know."),
+    learnr::answer("I forgot to load library(tidyverse).", correct = TRUE),
+    learnr::answer("I forgot to load all my active libraries."),
+    allow_retry = T
+  )
+)
+```
+
 
 The `%>%` operator can simplifies greatly coding logic. 
 
