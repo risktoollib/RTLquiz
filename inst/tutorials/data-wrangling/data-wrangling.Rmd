@@ -1,6 +1,9 @@
 ---
 title: "Data Wrangling"
-output: learnr::tutorial
+output:
+  learnr::tutorial:
+    progressive: true
+    allow_skip: false
 runtime: shiny_prerendered
 ---
 
@@ -24,7 +27,7 @@ learnr::quiz(
     learnr::answer("?x"),
     allow_retry = T
   )
-)
+) 
 ```
 
 ## Piping
