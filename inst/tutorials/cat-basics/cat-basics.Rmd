@@ -1,0 +1,25 @@
+---
+title: "Commodities Analytics & Trading - Basics"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Basics
+
+### Economics 
+
+```{r soft}
+learnr::quiz(
+  learnr::question("What are the 3 things one needs to know to determine the value of a commodity?",
+    learnr::answer("Grade, Delivery Location, Delivery Timing", correct = TRUE),
+    learnr::answer("Supply and Demand"),
+    learnr::answer("Supply"),
+    learnr::answer("Demand")
+  )
+)
+```
