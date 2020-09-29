@@ -15,7 +15,11 @@ Imports:
     magrittr,
     gt,
     lubridate,
-    tidyquant
+    tidyquant,
+    moments,
+    PerformanceAnalytics,
+    scales,
+    tibbletime
 RoxygenNote: 7.1.1
 Depends: 
     R (>= 2.10)

@@ -1,5 +1,5 @@
 # usethis::use_readme_md()
-#usethis::use_package("tidyquant")
+#usethis::use_package("PerformanceAnalytics")
 # usethis::use_pipe()
 library(tidyverse)
 library(tidyquant)

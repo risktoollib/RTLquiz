@@ -1,0 +1,157 @@
+---
+title: "DSCF Quiz 2"
+output:
+  learnr::tutorial:
+    progressive: true
+    allow_skip: false
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE, message=FALSE, warnings = F}
+library(learnr)
+library(tidyverse)
+library(lubridate)
+knitr::opts_chunk$set(message = FALSE, warning = FALSE, cache = FALSE,
+                      fig.width = 9, fig.height = 6,fig.align = "center",
+                      tidy = FALSE, strip.white = TRUE, out.width = '100%')
+library(gt)
+bd_txt <- function(x,title = "Grading",subtitle = "-", width = 700) {
+  if (nchar(gsub(" ","",subtitle))==0) {subtitle <- "-"}
+  y <- x %>% gt::gt() %>%
+    gt::tab_header(title = title, subtitle = subtitle) %>%
+    gt::tab_style(style = cell_text(weight = "bold"),
+                  locations = cells_column_labels(colnames(.))) %>%
+    gt::tab_style(style = list(cell_fill(color = "royalblue"),
+                               cell_text(color = "white",weight = "bold")),
+                  locations = cells_title(groups = c("title")))
+  y= y %>% tab_options(table.width = px(width),table.font.size = pct(80))
+  return(y)
+}
+
+bd_lo <- function(x,width=700) {
+  y <- x %>% gt::gt(rowname_col = rownames(.)) %>%
+    gt::tab_header(title = "Learning Objectives",
+                   subtitle = "Desired Outcomes Sought for Mastery of Material") %>%
+    gt::tab_style(style = cell_text(weight = "bold"),
+                  locations = cells_column_labels(colnames(.))) %>%
+    gt::tab_style(style = list(cell_fill(color = "royalblue"),
+                               cell_text(color = "white",weight = "bold")),
+                  locations = cells_title(groups = c("title")))
+  y= y %>% tab_options(table.width = px(width),table.font.size = pct(80))
+  return(y)
+}
+
+
+from = as.Date("2008-01-01")
+to = lubridate::rollback(Sys.Date())
+```
+
+## Problem We Are Solving
+
+**This quiz consists in analysing financial returns accross multiple asset classes.**
+
+This exercise is quiz #2 - see grading section.
+
+### Asset classes considered:
+
++ US Long Term bonds with the [iShares 20+ Year Treasury Bond ETF](https://etfdb.com/etf/TLT/#etf-ticker-profile).
++ Energy Liquids with the [United States Oil Fund](https://etfdb.com/etf/USO/#etf-ticker-profile).
++ Gold with the [SPDR Gold Trust](https://etfdb.com/etf/GLD/#etf-ticker-profile).
++ Real Estate with the [Vanguard Real Estate Index Fund](https://etfdb.com/etf/VNQ/#etf-ticker-profile).
++ US equities with the [SPDR S&P 500 ETF](https://etfdb.com/etf/SPY/#etf-ticker-profile).
+
+```{r}
+tickers <-  c("TLT","USO","GLD","VNQ","SPY")
+```
+
+### Your Ask
+
+In a concise .Rmd, do the following:
+
+1. Extract data from `r from` to `r to`.
+2. Compute daily `log()` returns.
+3. Plot a histogram of returns by asset class.
+4. Show a table of return distribution wiht each moments with a short commentary on they compare with a normal distribution.
+5. Compute the Jarque-Bera statistics and confirm it. 
+
+## Grading
+
+```{r, echo=F,include=TRUE, fig.height=3}
+tibble(Competency=c("RMardown",
+                    "Presentation",
+                    "Results"),
+           Measure=c(".Rmd renders without errors.",
+                   "It is readable as it would in a Word document and clear without unnecessary code being displayed.",
+                   "Correct results"),
+           Score=c("3 points",
+                   "2 points",
+                   "5 points")) %>% bd_lo()
+```
+
+## Solution Hint
+
+```{r, echo = F}
+library(tidyquant)
+ret <- tidyquant::tq_get(tickers,
+              get  = "stock.prices",
+              from = from,
+              to = to) %>% 
+  dplyr::select(date, symbol,close) %>% 
+  dplyr::group_by(symbol) %>% 
+  dplyr::mutate(ret = log(close / dplyr::lag(close))) %>% stats::na.omit() 
+```
+
+```{r, echo = F}
+ret %>% ggplot(aes(x = ret, col = symbol, fill = symbol)) + 
+  geom_histogram(aes(y = stat(width*density)), bins = 200,show.legend = FALSE) +
+  geom_rug(col = "black") +
+  facet_grid(symbol ~ .) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) + 
+  scale_x_continuous(labels = scales::percent_format(accuracy = 1)) +
+  labs(title = "Log Returns Density Histogram",
+       y = "Density", x = "Log Returns")
+```
+```{r, echo=F, fig.height=3}
+library(moments)
+ret %>% 
+  dplyr::summarise(mu = mean(ret),
+                   sigma = sd(ret),
+                   skew = moments::skewness(ret),
+                   kurt = moments::kurtosis(ret),
+                   .groups = "keep") %>% 
+  dplyr::mutate(dplyr::across(where(is.numeric), round, 4)) %>% 
+  dplyr::ungroup() %>% 
+  bd_txt(title = "Distribution Moments", subtitle = "") %>% 
+  gt::fmt_number(columns = vars(skew,kurt), decimals = 2) %>% 
+  gt::fmt_percent(columns = vars(mu, sigma), decimals = 3)
+```
+
+```{r, echo = F}
+library(PerformanceAnalytics)
+ret.wide <- ret %>%  
+  tidyr::pivot_wider(date, names_from = symbol, values_from = ret) %>% 
+  stats::na.omit() 
+ret.wide %>% timetk::tk_xts(rename_index = "date") %>% PerformanceAnalytics::chart.Correlation()
+```
+
+```{r, echo = F}
+fig.title = "Correlation Instability"
+library(tibbletime)
+cor20 <- tibbletime::rollify(~cor(.x, .y),window = 20)
+cor252 <- tibbletime::rollify(~cor(.x, .y),window = 252)
+cor1000 <- tibbletime::rollify(~cor(.x, .y),window = 1000)
+ret.wide %>% dplyr::mutate(cor20 = cor20(VNQ,SPY),
+                           cor252 = cor252(VNQ,SPY),
+                           cor1000 = cor1000(VNQ,SPY),
+                           cor = cor(VNQ,SPY)) %>% 
+  stats::na.omit() %>%
+  dplyr::select(date,dplyr::starts_with("cor")) %>% 
+  tidyr::pivot_longer(-date, "series","value") %>% 
+  ggplot(aes(x = date,y = value, col = series)) + geom_line() +
+  labs(title = fig.title,x = "",y = "")
+```
+
+```{r, echo =FALSE}
+library(broom)
+ret %>% dplyr::do(broom::tidy(tseries::jarque.bera.test(.$ret)))
+```
