@@ -66,7 +66,7 @@ tickers <-  c("TLT","USO","GLD","VNQ","SPY")
 
 ### Your Ask
 
-In a concise .Rmd, do the following:
+In a concise .Rmd using `tidy` (i.e. no `xts`), do the following:
 
 1. Extract data from `r from` to `r to`.
 2. Compute daily `log()` returns.
