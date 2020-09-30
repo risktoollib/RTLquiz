@@ -114,9 +114,9 @@ tidyquant::tq_get(x$Symbol,
               get  = "stock.prices",
               from = from,
               to = to) %>% 
-  dplyr::select(date, symbol,close) %>% 
+  dplyr::select(date, symbol,adjusted) %>% 
   dplyr::group_by(symbol) %>% 
-  dplyr::mutate(ret = log(close / dplyr::lag(close))) %>% 
+  dplyr::mutate(ret = log(adjusted / dplyr::lag(adjusted))) %>% 
   stats::na.omit() %>% 
   dplyr::summarise(aveRet = mean(ret),
                    StdV = sd(ret),
