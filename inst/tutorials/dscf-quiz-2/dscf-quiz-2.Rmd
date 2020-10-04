@@ -85,20 +85,22 @@ In a concise .Rmd using `tidy` (i.e. no `xts`), do the following:
 At this point in the class, more differentiation will be applied in grading. This is an advanced class in your learning in your degree and/or professional workplace and you are judged both on absolute and relative standards versus your peers.
 
 ```{r, echo=F,include=TRUE, fig.height=3}
-tibble(Competency=c("RMardown",
+tibble(Competency=c("Summary",
                     "Presentation",
-                    "Results"),
-           Measure=c(".Rmd renders without errors.",
-                   "You effectively and professionally tell the story. Clean document of unnecessary clutter not relevant to the story.",
-                   "Correct results"),
-           Score=c("1 points",
-                   "3 points",
+                    "Accuracy of code and results"),
+           Measure=c("Ability to distill and communicate the key findings.",
+                   "Professionally rendered presentations. Clean document of unnecessary clutter not relevant to the story. I am a business leader and interested in the story, not how you got to it.",
+                   "No errors in computations."),
+           Score=c("2 points",
+                   "2 points",
                    "6 points")) %>% bd_lo()
 ```
 
 ## Solution Hint
 
-This is meant to provide you with insights and as such we use different time periods for display purposes i.e. the numbers will not match the actual solution.
+> This is meant to provide you with insights and as such we use different time periods for display purposes i.e. the numbers will not match the actual solution.
+
+... your summary conclusions in plain language ...
 
 ```{r, echo = F}
 
@@ -115,6 +117,7 @@ ret <- tidyquant::tq_get(tickers,
   dplyr::mutate(ret = log(close / dplyr::lag(close))) %>% stats::na.omit() 
 ```
 
+
 ```{r, echo = F}
 ret %>% ggplot(aes(x = ret, col = symbol, fill = symbol)) + 
   geom_histogram(aes(y = stat(width*density)), bins = 200,show.legend = FALSE) +
@@ -125,6 +128,7 @@ ret %>% ggplot(aes(x = ret, col = symbol, fill = symbol)) +
   labs(title = "Log Returns Density Histogram",
        y = "Density", x = "Log Returns")
 ```
+
 ```{r, echo=F, fig.height=3}
 library(moments)
 ret %>% 
@@ -140,6 +144,7 @@ ret %>%
   gt::fmt_percent(columns = vars(mu, sigma), decimals = 3)
 ```
 
+
 ```{r, echo = F}
 library(PerformanceAnalytics)
 ret.wide <- ret %>%  
@@ -147,6 +152,7 @@ ret.wide <- ret %>%
   stats::na.omit() 
 ret.wide %>% timetk::tk_xts(rename_index = "date") %>% PerformanceAnalytics::chart.Correlation()
 ```
+
 
 ```{r, echo = F}
 fig.title = "Correlation Instability"
@@ -169,7 +175,6 @@ ret.wide %>% dplyr::mutate(cor20 = cor20(VNQ,SPY),
 library(broom)
 ret %>% dplyr::do(broom::tidy(tseries::jarque.bera.test(.$ret)))
 ```
-The following are normally distributed: your answer...
 
 ```{r, echo = F}
 spy <- ret %>% dplyr::filter(symbol == "SPY") %>% ungroup() %>% dplyr::select(ret)
