@@ -48,7 +48,7 @@ to = lubridate::rollback(Sys.Date())
 
 ## Problem We Are Solving
 
-**This quiz consists in analysing financial returns accross multiple asset classes.**
+**This quiz consists in analysing financial returns across multiple asset classes.**
 
 This exercise is quiz #2 - see grading section.
 
@@ -68,29 +68,43 @@ tickers <-  c("TLT","USO","GLD","VNQ","SPY")
 
 In a concise .Rmd using `tidy` (i.e. no `xts`), do the following:
 
-1. Extract data from `r from` to `r to`.
-2. Compute daily `log()` returns.
-3. Plot a histogram of returns by asset class.
-4. Show a table of return distribution wiht each moments with a short commentary on they compare with a normal distribution.
-5. Compute the Jarque-Bera statistics and confirm it. 
+1. Extract data from `r from` to `r to` and compute daily `log()` returns. It is not necessary to display in your document as this is the data wrangling of it.
+2. Plot a histogram of returns by asset class.
+3. Show a table of return distribution with each moments with a short commentary on they compare with a normal distribution.
+4. Compute the Jarque-Bera statistics.
+
+  + Display the results.
+  + State which one are normally distributed and which ones are not. 
+5. Compute the Kolmogorov-Smirnov (“KS”) on `SPY` returns and state whether the results indicate that the returns are normally distributed.
+
+6. I am your business leader and, despite knowing markets at a high level, my Finance background is quite limited... Tell me in a few bullet points what the key messages I should draw from your analysis so I can cut and paste them in a Powerpoint to my boss. Add this section at the beginning of the document in a summary section.  
+
 
 ## Grading
+
+At this point in the class, more differentiation will be applied in grading. This is an advanced class in your learning in your degree and/or professional workplace and you are judged both on absolute and relative standards versus your peers.
 
 ```{r, echo=F,include=TRUE, fig.height=3}
 tibble(Competency=c("RMardown",
                     "Presentation",
                     "Results"),
            Measure=c(".Rmd renders without errors.",
-                   "It is readable as it would in a Word document and clear without unnecessary code being displayed.",
+                   "You effectively and professionally tell the story. Clean document of unnecessary clutter not relevant to the story.",
                    "Correct results"),
-           Score=c("3 points",
-                   "2 points",
-                   "5 points")) %>% bd_lo()
+           Score=c("1 points",
+                   "3 points",
+                   "6 points")) %>% bd_lo()
 ```
 
 ## Solution Hint
 
+This is meant to provide you with insights and as such we use different time periods for display purposes i.e. the numbers will not match the actual solution.
+
 ```{r, echo = F}
+
+from = "2013-01-01"
+to = "2018-01-01"
+
 library(tidyquant)
 ret <- tidyquant::tq_get(tickers,
               get  = "stock.prices",
@@ -155,3 +169,12 @@ ret.wide %>% dplyr::mutate(cor20 = cor20(VNQ,SPY),
 library(broom)
 ret %>% dplyr::do(broom::tidy(tseries::jarque.bera.test(.$ret)))
 ```
+The following are normally distributed: your answer...
+
+```{r, echo = F}
+spy <- ret %>% dplyr::filter(symbol == "SPY") %>% ungroup() %>% dplyr::select(ret)
+stats::ks.test(spy, y = "pnorm")
+#stats::ks.test(rnorm(10000), y = "pnorm")
+```
+
+
