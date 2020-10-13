@@ -98,12 +98,11 @@ tibble(Competency=c("Summary",
 
 ## Solution Hint
 
-> This is meant to provide you with insights and as such we use different time periods for display purposes i.e. the numbers will not match the actual solution.
+> This is meant to provide you with PARTIAL insights and as such we use different time periods for display purposes i.e. the numbers will not match the actual solution. Neither is it a representation of the final output.    
 
-... your summary conclusions in plain language ...
+**Your final output should answer the questions instead of replicating the hints.**
 
 ```{r, echo = F}
-
 from = "2013-01-01"
 to = "2018-01-01"
 
@@ -145,7 +144,7 @@ ret %>%
 ```
 
 
-```{r, echo = F}
+```{r, echo = F, eval=FALSE}
 library(PerformanceAnalytics)
 ret.wide <- ret %>%  
   tidyr::pivot_wider(date, names_from = symbol, values_from = ret) %>% 
@@ -154,7 +153,7 @@ ret.wide %>% timetk::tk_xts(rename_index = "date") %>% PerformanceAnalytics::cha
 ```
 
 
-```{r, echo = F}
+```{r, echo = F, eval = F}
 fig.title = "Correlation Instability"
 library(tibbletime)
 cor20 <- tibbletime::rollify(~cor(.x, .y),window = 20)
@@ -171,7 +170,7 @@ ret.wide %>% dplyr::mutate(cor20 = cor20(VNQ,SPY),
   labs(title = fig.title,x = "",y = "")
 ```
 
-```{r, echo =FALSE}
+```{r, echo = FALSE}
 library(broom)
 ret %>% dplyr::do(broom::tidy(tseries::jarque.bera.test(.$ret)))
 ```
