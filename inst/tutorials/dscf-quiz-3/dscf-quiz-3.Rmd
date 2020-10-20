@@ -48,20 +48,22 @@ to = lubridate::rollback(Sys.Date())
 
 ## Problem We Are Solving
 
-**This quiz consists in analysing financial returns across multiple asset classes.**
+**This quiz consists in performing a multivariate regression.**
 
-This exercise is quiz #2 - see grading section.
+This exercise is quiz #3 - see grading section.
 
-### Asset classes considered:
+### Variables considered:
 
-+ US Long Term bonds with the [iShares 20+ Year Treasury Bond ETF](https://etfdb.com/etf/TLT/#etf-ticker-profile).
-+ Energy Liquids with the [United States Oil Fund](https://etfdb.com/etf/USO/#etf-ticker-profile).
-+ Gold with the [SPDR Gold Trust](https://etfdb.com/etf/GLD/#etf-ticker-profile).
-+ Real Estate with the [Vanguard Real Estate Index Fund](https://etfdb.com/etf/VNQ/#etf-ticker-profile).
+
++ NANR with the [SPDR® S&P® North American Natural Resources ETF](https://www.ssga.com/us/en/individual/etfs/funds/spdr-sp-north-american-natural-resources-etf-nanr).
 + US equities with the [SPDR S&P 500 ETF](https://etfdb.com/etf/SPY/#etf-ticker-profile).
++ Oil with the [United States Oil Fund](https://etfdb.com/etf/USO/#etf-ticker-profile).
++ Natural Gas with the [United States Natural Gas Fund](https://www.uscfinvestments.com/ung).
++ Gold with the [SPDR Gold Trust](https://etfdb.com/etf/GLD/#etf-ticker-profile).
++ Silver with the [iShares Silver Trust](https://www.ishares.com/us/products/239855/ishares-silver-trust-fund).
 
 ```{r}
-tickers <-  c("TLT","USO","GLD","VNQ","SPY")
+tickers <-  c("NANR","SPY","USO","UNG","GLD","SLV")
 ```
 
 ### Your Ask
@@ -98,87 +100,57 @@ tibble(Competency=c("Summary",
 
 ## Solution Hint
 
-> This is meant to provide you with PARTIAL insights and as such we use different time periods for display purposes i.e. the numbers will not match the actual solution. Neither is it a representation of the final output.    
-
-**Your final output should answer the questions instead of replicating the hints.**
+**No hints provided**
 
 ```{r, echo = F}
-from = "2013-01-01"
-to = "2018-01-01"
+#from = "2013-01-01"
+#to = "2018-01-01"
 
 library(tidyquant)
 ret <- tidyquant::tq_get(tickers,
               get  = "stock.prices",
               from = from,
               to = to) %>% 
-  dplyr::select(date, symbol,close) %>% 
+  dplyr::select(date, symbol,close = adjusted) %>% 
   dplyr::group_by(symbol) %>% 
-  dplyr::mutate(ret = log(close / dplyr::lag(close))) %>% stats::na.omit() 
-```
-
-
-```{r, echo = F}
-ret %>% ggplot(aes(x = ret, col = symbol, fill = symbol)) + 
-  geom_histogram(aes(y = stat(width*density)), bins = 200,show.legend = FALSE) +
-  geom_rug(col = "black") +
-  facet_grid(symbol ~ .) +
-  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) + 
-  scale_x_continuous(labels = scales::percent_format(accuracy = 1)) +
-  labs(title = "Log Returns Density Histogram",
-       y = "Density", x = "Log Returns")
-```
-
-```{r, echo=F, fig.height=3}
-library(moments)
-ret %>% 
-  dplyr::summarise(mu = mean(ret),
-                   sigma = sd(ret),
-                   skew = moments::skewness(ret),
-                   kurt = moments::kurtosis(ret),
-                   .groups = "keep") %>% 
-  dplyr::mutate(dplyr::across(where(is.numeric), round, 4)) %>% 
-  dplyr::ungroup() %>% 
-  bd_txt(title = "Distribution Moments", subtitle = "") %>% 
-  gt::fmt_number(columns = vars(skew,kurt), decimals = 2) %>% 
-  gt::fmt_percent(columns = vars(mu, sigma), decimals = 3)
-```
-
-
-```{r, echo = F, eval=FALSE}
-library(PerformanceAnalytics)
-ret.wide <- ret %>%  
+  dplyr::mutate(ret = log(close / dplyr::lag(close)))  %>% 
   tidyr::pivot_wider(date, names_from = symbol, values_from = ret) %>% 
-  stats::na.omit() 
-ret.wide %>% timetk::tk_xts(rename_index = "date") %>% PerformanceAnalytics::chart.Correlation()
+  stats::na.omit()
 ```
 
 
-```{r, echo = F, eval = F}
-fig.title = "Correlation Instability"
-library(tibbletime)
-cor20 <- tibbletime::rollify(~cor(.x, .y),window = 20)
-cor252 <- tibbletime::rollify(~cor(.x, .y),window = 252)
-cor1000 <- tibbletime::rollify(~cor(.x, .y),window = 1000)
-ret.wide %>% dplyr::mutate(cor20 = cor20(VNQ,SPY),
-                           cor252 = cor252(VNQ,SPY),
-                           cor1000 = cor1000(VNQ,SPY),
-                           cor = cor(VNQ,SPY)) %>% 
-  stats::na.omit() %>%
-  dplyr::select(date,dplyr::starts_with("cor")) %>% 
-  tidyr::pivot_longer(-date, "series","value") %>% 
-  ggplot(aes(x = date,y = value, col = series)) + geom_line() +
-  labs(title = fig.title,x = "",y = "")
-```
-
-```{r, echo = FALSE}
-library(broom)
-ret %>% dplyr::do(broom::tidy(tseries::jarque.bera.test(.$ret)))
+```{r, echo = F}
+fit1 <- stats::lm(NANR ~ SPY,ret)
+fit2 <- stats::lm(NANR ~ SPY + USO,ret)
+fit3 <- stats::lm(NANR ~ SPY + USO + UNG,ret)
+fit4 <- stats::lm(NANR ~ SPY + USO + UNG + GLD,ret)
+fit5 <- stats::lm(NANR ~ SPY + USO + UNG + GLD + SLV,ret)
 ```
 
 ```{r, echo = F}
-spy <- ret %>% dplyr::filter(symbol == "SPY") %>% ungroup() %>% dplyr::select(ret)
-stats::ks.test(spy, y = "pnorm")
-#stats::ks.test(rnorm(10000), y = "pnorm")
+ret %>% GGally::ggpairs()
+```
+```{r, echo = F}
+ret %>% RTL::chart_pairs()
 ```
 
+```{r, echo = F}
+library(broom)
+fit1 %>% broom::glance() %>% 
+  dplyr::add_row(fit2 %>% broom::glance()) %>% 
+  dplyr::add_row(fit3 %>% broom::glance()) %>% 
+  dplyr::add_row(fit4 %>% broom::glance()) %>% 
+  dplyr::add_row(fit5 %>% broom::glance()) %>% dplyr::select(1:5)
+```
+
+```{r, eval = F}
+car::vif(fit2)
+car::vif(fit3)
+car::vif(fit4)
+car::vif(fit5)
+```
+```{r, echo = F}
+fitfinal <- stats::lm(NANR ~ SPY + USO + GLD,ret)
+summary(fitfinal)
+```
 
