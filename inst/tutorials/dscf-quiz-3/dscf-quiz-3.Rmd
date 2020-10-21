@@ -67,19 +67,19 @@ tickers <-  c("NANR","SPY","USO","UNG","GLD","SLV")
 
 ### Your Ask
 
-The ask consists in demonstrating your ability the explain the performance of `NANR` as a function of the other variables in using a multivariate regression framework.
+The ask consists in demonstrating your ability to explain the performance of `NANR` as a function of the other variables in a multivariate regression framework.
 
 In a concise .Rmd (i.e. no `flexdashboards`), follow the workflow in the class note module on multivariate regressions.
 
 1. Extract data from `r from` to `r to` and compute daily `log()` returns.
-2. Provide a correlation matrix and/or pairs plot and comment on whether you see potential issues with multicollinearity.
+2. Provide a correlation matrix and/or pairs plot and comment on whether and where you see potential issues with multicollinearity.
 3. Compute regressions by recursively adding independent variables.
 4. Compute the Variance Inflation Factor ("VIF") for all your regressions.
-5. Make a clear recommendation on what multivariate regression you deem best and the reasons why. Use all the knowledge you gained on regressions up to this point in class.
+5. Make a clear recommendation on which multivariate regression model you deem best and the reasons why. Use all the knowledge you gained on regressions up to this point in class.
 
 ## Grading
 
-At this point in the class, more differentiation will be applied in grading. This is an advanced class in your learning in your degree and/or professional workplace and you are judged both on absolute and relative standards versus your peers. You are focused on building skills to support your future career success.
+This is an advanced class in your degree and/or professional workplace and you are judged both on absolute and relative standards versus your peers. You are focused on building skills to support your future career success.
 
 ```{r, echo=F,include=TRUE, fig.height=3}
 tibble(Competency=c("Presentation",
@@ -87,9 +87,9 @@ tibble(Competency=c("Presentation",
                     "Recursive Regressions",
                     "VIF",
                     "Recommended Regression"),
-           Measure=c("Professionally rendered presentations. Clean document of unnecessary clutter not relevant to the story. Assume you are presenting to a business leader interested in the story, not how you got to it.  Do not display code unless necessary to enhance your message.",
+           Measure=c("Professionally rendered and document clean of unnecessary code/clutter not relevant to the story. Assume you are presenting to a business leader interested in the story, not how you got to it.",
                    "Insightful interpretation.",
-                   "No errors in computations.",
+                   "Models properly defined and no errors in computations.",
                    "Correct implementation.",
                    "Ability to apply concepts towards a final practical recommendation with sound logic."),
            Score=c("1.5 points",
