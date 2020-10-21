@@ -42,7 +42,7 @@ bd_lo <- function(x,width=700) {
 }
 
 
-from = as.Date("2008-01-01")
+from = as.Date("2016-01-01")
 to = lubridate::rollback(Sys.Date())
 ```
 
@@ -53,7 +53,6 @@ to = lubridate::rollback(Sys.Date())
 This exercise is quiz #3 - see grading section.
 
 ### Variables considered:
-
 
 + NANR with the [SPDR® S&P® North American Natural Resources ETF](https://www.ssga.com/us/en/individual/etfs/funds/spdr-sp-north-american-natural-resources-etf-nanr).
 + US equities with the [SPDR S&P 500 ETF](https://etfdb.com/etf/SPY/#etf-ticker-profile).
@@ -68,44 +67,43 @@ tickers <-  c("NANR","SPY","USO","UNG","GLD","SLV")
 
 ### Your Ask
 
-In a concise .Rmd using `tidy` (i.e. no `xts`), do the following:
+The ask consists in demonstrating your ability the explain the performance of `NANR` as a function of the other variables in using a multivariate regression framework.
+
+In a concise .Rmd (i.e. no `flexdashboards`), follow the workflow in the class note module on multivariate regressions.
 
 1. Extract data from `r from` to `r to` and compute daily `log()` returns. It is not necessary to display in your document as this is the data wrangling of it.
-2. Plot a histogram of returns by asset class.
-3. Show a table of return distribution with each moments with a short commentary on they compare with a normal distribution.
-4. Compute the Jarque-Bera statistics.
-
-  + Display the results.
-  + State which one are normally distributed and which ones are not. 
-5. Compute the Kolmogorov-Smirnov (“KS”) on `SPY` returns and state whether the results indicate that the returns are normally distributed.
-
-6. I am your business leader and, despite knowing markets at a high level, my Finance background is quite limited... Tell me in a few bullet points what the key messages I should draw from your analysis so I can cut and paste them in a Powerpoint to my boss. Add this section at the beginning of the document in a summary section.  
-
+2. Provide a correlation matrix and/or pairs plot and comment on whether you see potential issues with multicolinearity.
+3. Compute regressions by recursively adding independent variables.
+4. Compute the Variance Inflation Factor ("VIF") for all your regressions.
+5. Make a clear recommendation on what multivariate regression you deem best and the reasons why. Use all the knowledge you gained on regressions up to this point in class.
 
 ## Grading
 
 At this point in the class, more differentiation will be applied in grading. This is an advanced class in your learning in your degree and/or professional workplace and you are judged both on absolute and relative standards versus your peers.
 
 ```{r, echo=F,include=TRUE, fig.height=3}
-tibble(Competency=c("Summary",
-                    "Presentation",
-                    "Accuracy of code and results"),
-           Measure=c("Ability to distill and communicate the key findings.",
-                   "Professionally rendered presentations. Clean document of unnecessary clutter not relevant to the story. I am a business leader and interested in the story, not how you got to it.",
-                   "No errors in computations."),
-           Score=c("2 points",
+tibble(Competency=c("Presentation",
+                    "Cor Matrix / Pairs Plot",
+                    "Recursive Regressions",
+                    "VIF",
+                    "Recommended Regression"),
+           Measure=c("Professionally rendered presentations. Clean document of unnecessary clutter not relevant to the story. I am a business leader and interested in the story, not how you got to it.",
+                   "Insightful interpretation.",
+                   "No errors in computations.",
+                   "Correct implementation.",
+                   "Ability to apply concepts towards a final practical recommendation with sound logic."),
+           Score=c("1.5 points",
+                   "1.5 points",
                    "2 points",
-                   "6 points")) %>% bd_lo()
+                   "1 point",
+                   "4 points")) %>% bd_lo()
 ```
 
 ## Solution Hint
 
-**No hints provided**
+**No hints provided.**
 
-```{r, echo = F}
-#from = "2013-01-01"
-#to = "2018-01-01"
-
+```{r, echo = F, eval=F}
 library(tidyquant)
 ret <- tidyquant::tq_get(tickers,
               get  = "stock.prices",
@@ -119,7 +117,7 @@ ret <- tidyquant::tq_get(tickers,
 ```
 
 
-```{r, echo = F}
+```{r, echo = F, eval=F}
 fit1 <- stats::lm(NANR ~ SPY,ret)
 fit2 <- stats::lm(NANR ~ SPY + USO,ret)
 fit3 <- stats::lm(NANR ~ SPY + USO + UNG,ret)
@@ -127,14 +125,15 @@ fit4 <- stats::lm(NANR ~ SPY + USO + UNG + GLD,ret)
 fit5 <- stats::lm(NANR ~ SPY + USO + UNG + GLD + SLV,ret)
 ```
 
-```{r, echo = F}
+```{r, echo = F, eval=F}
 ret %>% GGally::ggpairs()
 ```
-```{r, echo = F}
+
+```{r, echo = F, eval=F}
 ret %>% RTL::chart_pairs()
 ```
 
-```{r, echo = F}
+```{r, echo = F, eval=F}
 library(broom)
 fit1 %>% broom::glance() %>% 
   dplyr::add_row(fit2 %>% broom::glance()) %>% 
@@ -143,13 +142,14 @@ fit1 %>% broom::glance() %>%
   dplyr::add_row(fit5 %>% broom::glance()) %>% dplyr::select(1:5)
 ```
 
-```{r, eval = F}
+```{r, echo = F, eval=F}
 car::vif(fit2)
 car::vif(fit3)
 car::vif(fit4)
 car::vif(fit5)
 ```
-```{r, echo = F}
+
+```{r, echo = F, eval=F}
 fitfinal <- stats::lm(NANR ~ SPY + USO + GLD,ret)
 summary(fitfinal)
 ```
