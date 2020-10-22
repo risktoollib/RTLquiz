@@ -53,10 +53,10 @@ learnr::quiz(
 ```{r str}
 learnr::quiz(
   learnr::question("You loaded object z in your environment. What would you type to see what type of object it is?",
-    learnr::answer("summary(x)"),
-    learnr::answer("x"),
-    learnr::answer("RtellMe(x)"),
-    learnr::answer("str(x)", correct = TRUE)
+    learnr::answer("summary(z)"),
+    learnr::answer("z"),
+    learnr::answer("RtellMe(z)"),
+    learnr::answer("str(z)", correct = TRUE)
   )
 )
 ```
