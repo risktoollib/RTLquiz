@@ -89,27 +89,24 @@ ret_long <- wti %>%
   dplyr::mutate(ret = value - dplyr::lag(value)) %>% stats::na.omit()
 ```
 
-```{r}
-DF = data.frame(integer = 1:10,
-                   numeric = rnorm(10),
-                   logical = rep(TRUE, 10), 
-                   character = LETTERS[1:10],
-                   factor = factor(letters[1:10], levels = letters[10:1], 
-                                   ordered = TRUE),
-                   factor_allow = factor(letters[1:10], levels = letters[10:1], 
-                                         ordered = TRUE),
-                   date = seq(from = Sys.Date(), by = "days", length.out = 10),
-                   stringsAsFactors = FALSE)
-
-rhandsontable(DF, width = 600, height = 300) %>%
-  hot_col("factor_allow", allowInvalid = TRUE)
+```{r, echo = F}
+rHandsontableOutput("hot")
 ```
 
+
 ```{r, context = "server"}
-day0 <- as_tibble(cbind(contract = names(wti)[-1], Price = t(wti)[-1,1]),ExpoSwap = 0.001,ExpoHegde = 0)
+day0 = wti %>% dplyr::slice(1) %>% dplyr::select(-date)
+day0 <- dplyr::as_tibble(cbind(contract = names(day0),t(day0))) %>%  
+  dplyr::rename(Settle = V2) %>% 
+  dplyr::mutate(ExpoHedge = 0,
+                ExpoSwap = 0)
+
+#df1 <- shiny::reactive({day0})
 output$hot <- renderRHandsontable({
-  rhandsontable::rhandsontable(day0,stretchH = "all")
+  rhandsontable::rhandsontable(day0,rowHeaders = NULL)
     })
+
+
  #%>% hot_to_r()
 ```
 
