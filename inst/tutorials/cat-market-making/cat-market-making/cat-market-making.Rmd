@@ -13,7 +13,6 @@ library(tidyverse)
 library(lubridate)
 library(rhandsontable)
 library(jsonlite)
-library(tsibble)
 library(purrr)
 library(gt)
 
@@ -96,7 +95,7 @@ learnr::question(paste("Select the futures contract(s) applicable to pricing a W
 
 ## Game 1: Swap Exposure
 
-```{r}
+```{r, context = "data"}
 # Base random date prices - wide
 wti <- dfwide %>% dplyr::select(date,tidyselect::contains("CL"))
 dd <- wti %>% 
@@ -119,9 +118,11 @@ swp.qty <-  30
 
 # Base df
 day0 <- wti %>% dplyr::slice(1) %>% dplyr::select(-date)
-day0 <- dplyr::as_tibble(cbind(FutContract = names(day0),t(day0))) %>%  
-  dplyr::rename(Settle = V2) %>% 
-  dplyr::mutate(CalendarMonth =  seq(lubridate::floor_date(dd,unit = "month") + months(1),lubridate::floor_date(dd,unit = "month") + months(14), by = "months"),
+day0 <- dplyr::as_tibble(cbind(names(day0),t(day0)),.name_repair = c("minimal"))
+colnames(day0) <-  c("Futures","Settle")   
+day0 <-  day0 %>% 
+  dplyr::mutate(Settle = as.numeric(Settle),
+                CalendarMonth =  seq(lubridate::floor_date(dd,unit = "month") + months(1),lubridate::floor_date(dd,unit = "month") + months(14), by = "months"),
                 DaysInMonth = lubridate::days_in_month(CalendarMonth),
                 FirstFutWeight = purrr::pmap(.l = list(Month = CalendarMonth,contract = "cmewti",exchange = "nymex", output = "first.fut.weight"),
                                              .f = RTL::swapFutWeight),
@@ -130,6 +131,8 @@ day0 <- dplyr::as_tibble(cbind(FutContract = names(day0),t(day0))) %>%
                 ExpoSwap = 0) %>% 
   dplyr::mutate(CalendarMonth = as.character(substr(CalendarMonth,1,7)) ) %>% 
   dplyr::select(CalendarMonth, everything())
+g1data = list(dd = dd, swp.start = swp.start, swp.end = swp.end, swp.qty = swp.qty,day0 = day0)
+saveRDS(g1data,"g1data.rds")
 ```
 
 + We are on `r dd` and you are buying a WTI CMA swap (paying fixed) from a producer.
@@ -143,15 +146,16 @@ rHandsontableOutput("table")
 ```
 
 ```{r, context = "server"}
-df <- shiny::reactiveValues(data = NULL) ## assign it with NULL
-    
-shiny::observe({df$data <- day0})
-    
-shiny::observe({ 
-  if (!is.null(input$table)) {df$data <- hot_to_r(input$table)} 
+attach(readRDS("g1data.rds")) 
+
+g1df <- shiny::reactiveValues(data = day0)
+
+observe({
+  if (!is.null(input$table)) {g1df$data <- rhandsontable::hot_to_r(input$table)} 
+  output$table <- renderRHandsontable({rhandsontable(g1df$data)})
   })
-    
-output$table <- rhandsontable::renderRHandsontable({rhandsontable::rhandsontable(df$data,rowHeaders = NULL)})
+
+#output$table <- rhandsontable::renderRHandsontable({rhandsontable::rhandsontable(g1df,rowHeaders = NULL)})
 ```
 
 Click `Next` when you are done.
@@ -162,17 +166,16 @@ Click `Next` when you are done.
 rHandsontableOutput("table2")
 ```
 
-```{r, context = "server"}
-y <- reactive({
-  x = df$data
-  x %>% dplyr::mutate(Answer = 0)
-})
-
-output$table2 <- rhandsontable::renderRHandsontable({rhandsontable::rhandsontable(y(),rowHeaders = NULL)})
-
+```{r, eval = T,context = "server"}
+#day0a <- g1df$data %>% dplyr::mutate(Answer = 0)
+output$table2 <- rhandsontable::renderRHandsontable({rhandsontable::rhandsontable(g1df$data,rowHeaders = NULL)})
 ```
 
-```{r}
+## Game 2 - Hedging
 
-```
++ Now you are offered a calendar year swap that you need to hedge.
++ You will have 
+
+## Gam2 - PL
+
 

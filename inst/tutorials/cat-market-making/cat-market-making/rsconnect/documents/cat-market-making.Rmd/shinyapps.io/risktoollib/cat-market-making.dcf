@@ -1,0 +1,12 @@
+name: cat-market-making
+title: cat-market-making
+username:
+account: risktoollib
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 3235896
+bundleId: 3863382
+url: https://risktoollib.shinyapps.io/cat-market-making/
+when: 1605458550.03339
+asMultiple: FALSE
+asStatic: FALSE
