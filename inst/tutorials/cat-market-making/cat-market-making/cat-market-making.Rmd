@@ -152,7 +152,15 @@ g1df <- shiny::reactiveValues(data = day0)
 
 observe({
   if (!is.null(input$table)) {g1df$data <- rhandsontable::hot_to_r(input$table)} 
-  output$table <- renderRHandsontable({rhandsontable(g1df$data,rowHeaders = NULL)})
+  output$table <- renderRHandsontable({
+    rhandsontable::rhandsontable(g1df$data,rowHeaders = NULL) %>% 
+      rhandsontable::hot_col(1:6, readOnly = TRUE) %>% 
+      rhandsontable::hot_col("ExpoSwap", renderer = "function (instance, td, row, col, prop, value, cellProperties) {
+  Handsontable.renderers.TextRenderer.apply(this, arguments);
+  td.style.background = 'lightgreen';
+  td.style.fontWeight = 'bold';
+  }")
+    }) 
   })
 
 #output$table <- rhandsontable::renderRHandsontable({rhandsontable::rhandsontable(g1df,rowHeaders = NULL)})
@@ -180,7 +188,13 @@ output$table2 <- rhandsontable::renderRHandsontable({
                   Errors = ExpoSwap - ExpoSwapCorrect) %>% 
     dplyr::mutate_if(is.numeric, ~replace(., is.na(.), 0)) %>% 
     dplyr::select(-swp, -f1,-f2)
-  rhandsontable::rhandsontable(g1res,rowHeaders = NULL)
+  rhandsontable::rhandsontable(g1res,rowHeaders = NULL) %>% 
+    rhandsontable::hot_col(1:6, readOnly = TRUE) %>% 
+  rhandsontable::hot_col("ExpoSwap", renderer = "function (instance, td, row, col, prop, value, cellProperties) {
+  Handsontable.renderers.TextRenderer.apply(this, arguments);
+  td.style.background = 'lightgreen';
+  td.style.fontWeight = 'bold';
+  }")
   })
 ```
 
