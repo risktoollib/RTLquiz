@@ -152,7 +152,7 @@ g1df <- shiny::reactiveValues(data = day0)
 
 observe({
   if (!is.null(input$table)) {g1df$data <- rhandsontable::hot_to_r(input$table)} 
-  output$table <- renderRHandsontable({rhandsontable(g1df$data)})
+  output$table <- renderRHandsontable({rhandsontable(g1df$data,rowHeaders = NULL)})
   })
 
 #output$table <- rhandsontable::renderRHandsontable({rhandsontable::rhandsontable(g1df,rowHeaders = NULL)})
