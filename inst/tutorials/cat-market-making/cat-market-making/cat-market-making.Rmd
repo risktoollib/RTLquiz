@@ -12,6 +12,24 @@ library(RTL)
 library(tidyverse)
 library(lubridate)
 library(rhandsontable)
+library(jsonlite)
+library(tsibble)
+library(purrr)
+library(gt)
+
+bd_lo <- function(x,width=700) {
+  y <- x %>% gt::gt(rowname_col = rownames(.)) %>%
+    gt::tab_header(title = "Learning Objectives",
+                   subtitle = "Desired Outcomes Sought for Mastery of Material") %>%
+    gt::tab_style(style = cell_text(weight = "bold"),
+                  locations = cells_column_labels(colnames(.))) %>%
+    gt::tab_style(style = list(cell_fill(color = "royalblue"),
+                               cell_text(color = "white",weight = "bold")),
+                  locations = cells_title(groups = c("title")))
+  y= y %>% tab_options(table.width = px(width),table.font.size = pct(80))
+  return(y)
+}
+
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
@@ -25,18 +43,24 @@ This interactive tutorial aims at two objectives:
   + The gasoline desk wants to take a position on a crack spread and needs to transact in WTI futures.
   + Producer `NetZero2050 Inc` wants to hedge the next calendar year production.
 
-The desired competenties in the job are:
-
-1. Know your exposure at all times. 
-2. Be ready at all times to make a market.
-3. Hedge your risk as quickly as you can accounting for liquidity. 
+```{r}
+tibble(Competency = c("Exposure",
+                      "WTI CMA Swap Pricing",
+                      "Market Making"),
+           Measure = c("Know your exposure at all times.",
+                   "Translate understanding of pricing concepts into exposure.",
+                   "Obtain a quasi-real world experience of being able to operate as a trader in pricing deals and managing risk effectively.")) %>% bd_lo()
+```
 
 A market making desk does not carry exposure to flat price at any time. 
 
 + Your delta limit to flat price exposure is zero.
 + You are allowed to carry time spread exposure as part of the hedging process arising from customer activity only.
 
-## Review - Swap Pricing
+
+## WTI CMA Swap Pricing
+
+This section tests your ability to implement base concepts of averaging swap pricing for WTI. 
 
 ### Expiry Dates
 
@@ -70,7 +94,7 @@ learnr::question(paste("Select the futures contract(s) applicable to pricing a W
                  learnr::answer(paste(lubridate::month(sw[3,"Month"], label = T, abbr = F) %>% as.character(),sw[3,"Year"]), correct = TRUE))
 ```
 
-## Game 1
+## Game 1: Swap Exposure
 
 ```{r}
 # Base random date prices - wide
@@ -82,55 +106,73 @@ wti <- wti %>% dplyr::filter(date >= dd) %>% dplyr::slice(1:6) %>% dplyr::select
 tickers <- expiry_table %>% dplyr::filter(cmdty == "cmewti", Last.Trade > dd) %>% 
   dplyr::slice(1:15) %>% dplyr::transmute(ticker = stringr::str_replace_all(ticker,"[^[:alnum:]]","")) %>% .[[1]]
 colnames(wti) <-  paste(c("date", tickers))
+
 # Returns
 ret_long <- wti %>% 
   tidyr::pivot_longer(-date,names_to = "series",values_to = "value") %>% 
   dplyr::group_by(series) %>% 
   dplyr::mutate(ret = value - dplyr::lag(value)) %>% stats::na.omit()
+# swap
+swp.start <-  lubridate::ceiling_date(dd, "quarter")
+swp.end <-  swp.start + months(3) - 1
+swp.qty <-  30
+
+# Base df
+day0 <- wti %>% dplyr::slice(1) %>% dplyr::select(-date)
+day0 <- dplyr::as_tibble(cbind(FutContract = names(day0),t(day0))) %>%  
+  dplyr::rename(Settle = V2) %>% 
+  dplyr::mutate(CalendarMonth =  seq(lubridate::floor_date(dd,unit = "month") + months(1),lubridate::floor_date(dd,unit = "month") + months(14), by = "months"),
+                DaysInMonth = lubridate::days_in_month(CalendarMonth),
+                FirstFutWeight = purrr::pmap(.l = list(Month = CalendarMonth,contract = "cmewti",exchange = "nymex", output = "first.fut.weight"),
+                                             .f = RTL::swapFutWeight),
+                FirstFutWeight = round(as.numeric(FirstFutWeight),2),
+                SecondFutWeight = round(1 - FirstFutWeight,2),
+                ExpoSwap = 0) %>% 
+  dplyr::mutate(CalendarMonth = as.character(substr(CalendarMonth,1,7)) ) %>% 
+  dplyr::select(CalendarMonth, everything())
 ```
+
++ We are on `r dd` and you are buying a WTI CMA swap (paying fixed) from a producer.
++ The swap period is from `r swp.start` to `r swp.end`.
++ Volume is `1 kbd`. Days in months are specified in the table. 
+
+In the column `ExpoSwap` in the table below, type the exposure that you take from the customer deal in futures equivalent.
 
 ```{r, echo = F}
-rHandsontableOutput("hot")
+rHandsontableOutput("table")
 ```
-
 
 ```{r, context = "server"}
-day0 = wti %>% dplyr::slice(1) %>% dplyr::select(-date)
-day0 <- dplyr::as_tibble(cbind(contract = names(day0),t(day0))) %>%  
-  dplyr::rename(Settle = V2) %>% 
-  dplyr::mutate(ExpoHedge = 0,
-                ExpoSwap = 0)
-
-#df1 <- shiny::reactive({day0})
-output$hot <- renderRHandsontable({
-  rhandsontable::rhandsontable(day0,rowHeaders = NULL)
-    })
-
-
- #%>% hot_to_r()
+df <- shiny::reactiveValues(data = NULL) ## assign it with NULL
+    
+shiny::observe({df$data <- day0})
+    
+shiny::observe({ 
+  if (!is.null(input$table)) {df$data <- hot_to_r(input$table)} 
+  })
+    
+output$table <- rhandsontable::renderRHandsontable({rhandsontable::rhandsontable(df$data,rowHeaders = NULL)})
 ```
 
+Click `Next` when you are done.
 
+## Game 1: Results
 
-### Exercise with Hint
-
-*Here's an exercise where the chunk is pre-evaluated via the `exercise.eval` option (so the user can see the default output we'd like them to customize). We also add a "hint" to the correct solution via the chunk immediate below labeled `print-limit-hint`.*
-
-Modify the following code to limit the number of rows printed to 5:
-
-```{r print-limit, exercise=TRUE, exercise.eval=TRUE}
-mtcars
+```{r}
+rHandsontableOutput("table2")
 ```
 
-```{r print-limit-hint}
-head(mtcars)
+```{r, context = "server"}
+y <- reactive({
+  x = df$data
+  x %>% dplyr::mutate(Answer = 0)
+})
+
+output$table2 <- rhandsontable::renderRHandsontable({rhandsontable::rhandsontable(y(),rowHeaders = NULL)})
+
 ```
 
-### Quiz
+```{r}
 
-*You can include any number of single or multiple choice questions as a quiz. Use the `question` function to define a question and the `quiz` function for grouping multiple questions together.*
-
-Some questions to verify that you understand the purposes of various base and recommended R packages:
-
-
+```
 
