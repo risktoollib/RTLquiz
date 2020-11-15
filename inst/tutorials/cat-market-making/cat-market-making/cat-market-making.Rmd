@@ -114,7 +114,7 @@ ret_long <- wti %>%
 # swap
 swp.start <-  lubridate::ceiling_date(dd, "quarter")
 swp.end <-  swp.start + months(3) - 1
-swp.qty <-  30
+swp.qty <-  1
 
 # Base df
 day0 <- wti %>% dplyr::slice(1) %>% dplyr::select(-date)
@@ -129,7 +129,7 @@ day0 <-  day0 %>%
                 FirstFutWeight = round(as.numeric(FirstFutWeight),2),
                 SecondFutWeight = round(1 - FirstFutWeight,2),
                 ExpoSwap = 0) %>% 
-  dplyr::mutate(CalendarMonth = as.character(substr(CalendarMonth,1,7)) ) %>% 
+  #dplyr::mutate(CalendarMonth = as.character(substr(CalendarMonth,1,7)) ) %>% 
   dplyr::select(CalendarMonth, everything())
 g1data = list(dd = dd, swp.start = swp.start, swp.end = swp.end, swp.qty = swp.qty,day0 = day0)
 saveRDS(g1data,"g1data.rds")
@@ -137,7 +137,7 @@ saveRDS(g1data,"g1data.rds")
 
 + We are on `r dd` and you are buying a WTI CMA swap (paying fixed) from a producer.
 + The swap period is from `r swp.start` to `r swp.end`.
-+ Volume is `1 kbd`. Days in months are specified in the table. 
++ Volume is `r swp.qty` kbd. Days in months are specified in the table. 
 
 In the column `ExpoSwap` in the table below, type the exposure that you take from the customer deal in futures equivalent.
 
@@ -158,7 +158,7 @@ observe({
 #output$table <- rhandsontable::renderRHandsontable({rhandsontable::rhandsontable(g1df,rowHeaders = NULL)})
 ```
 
-Click `Next` when you are done.
+Click `Next` when you are done to compare your answer with correct results.
 
 ## Game 1: Results
 
@@ -167,8 +167,21 @@ rHandsontableOutput("table2")
 ```
 
 ```{r, eval = T,context = "server"}
-#day0a <- g1df$data %>% dplyr::mutate(Answer = 0)
-output$table2 <- rhandsontable::renderRHandsontable({rhandsontable::rhandsontable(g1df$data,rowHeaders = NULL)})
+output$table2 <- rhandsontable::renderRHandsontable({
+  g1res <- g1df$data
+  g1res <- g1res %>% 
+    dplyr::mutate(swp = dplyr::case_when((CalendarMonth >= swp.start & CalendarMonth < swp.end) ~ swp.qty * DaysInMonth,
+                                         TRUE ~ 0),
+                  f1 = swp * FirstFutWeight,
+                  f1 = dplyr::lag(f1),
+                  f2 = swp * SecondFutWeight,
+                  f2 = dplyr::lag(f2,2),
+                  ExpoSwapCorrect = f1 + f2,
+                  Errors = ExpoSwap - ExpoSwapCorrect) %>% 
+    dplyr::mutate_if(is.numeric, ~replace(., is.na(.), 0)) %>% 
+    dplyr::select(-swp, -f1,-f2)
+  rhandsontable::rhandsontable(g1res,rowHeaders = NULL)
+  })
 ```
 
 ## Game 2 - Hedging
