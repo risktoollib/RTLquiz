@@ -5,9 +5,9 @@ account: risktoollib
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 3235896
-bundleId: 3863616
+bundleId: 3864104
 url: https://risktoollib.shinyapps.io/cat-market-making/
-when: 1605464939.27477
+when: 1605475304.3905
 asMultiple: FALSE
 asStatic: FALSE
 ignoredFiles: g1data.rds|cat-market-making_data/data_chunks_index.txt|cat-market-making_data/unnamed-chunk-3.RData|tests/shinytest.R
