@@ -15,6 +15,18 @@ sp500_prices <- tidyquant::tq_get("AIG",
 usethis::use_data(sp500_desc, overwrite = T)
 usethis::use_data(sp500_prices, overwrite = T)
 
+
+# tweets
+
+# http://www.trumptwitterarchive.com/archive
+# use geany text editor in Linux for very large files
+twtrump <- fromJSON("./data-raw/twtrump.json")
+twtrump <- twtrump %>%
+   dplyr::mutate(created_at = as.POSIXct(created_at,tz = "GMT",format=c("%a %b %d %H:%M:%S +0000 %Y"))) %>%
+   dplyr:::rename(favoriteCount = favorite_count, created = created_at, id = id_str) %>%
+   as_tibble()
+usethis::use_data(twtrump, overwrite = T)
+
 # Global
 devtools::document()
 

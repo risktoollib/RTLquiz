@@ -1,8 +1,8 @@
 Package: RTLquiz
 Type: Package
 Title: Learnr Tutorials
-Version: 0.1.0
-Date: 2020-09-03
+Version: 0.1.1
+Date: 2020-11-22
 Authors@R: c(person("Philippe", "Cote", email = "pcote@ualberta.ca", role = c("aut", "cre")))
 Description: Build to support delivery of Finance classes from one of the co-authors
     of RTL at the [Alberta School of Business](https://www.ualberta.ca/business/index.html).
@@ -22,4 +22,4 @@ Imports:
     tibbletime
 RoxygenNote: 7.1.1
 Depends: 
-    R (>= 2.10)
+    R (>= 4.0)
