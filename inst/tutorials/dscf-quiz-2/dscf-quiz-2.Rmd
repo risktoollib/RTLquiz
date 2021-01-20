@@ -11,33 +11,53 @@ runtime: shiny_prerendered
 library(learnr)
 library(tidyverse)
 library(lubridate)
-knitr::opts_chunk$set(message = FALSE, warning = FALSE, cache = FALSE,
-                      fig.width = 9, fig.height = 6,fig.align = "center",
-                      tidy = FALSE, strip.white = TRUE, out.width = '100%')
+knitr::opts_chunk$set(
+  message = FALSE,
+  warning = FALSE,
+  cache = FALSE,
+  fig.width = 9,
+  fig.height = 6,
+  fig.align = "center",
+  tidy = FALSE,
+  strip.white = TRUE,
+  out.width = '100%'
+)
 library(gt)
-bd_txt <- function(x,title = "Grading",subtitle = "-", width = 700) {
-  if (nchar(gsub(" ","",subtitle))==0) {subtitle <- "-"}
-  y <- x %>% gt::gt() %>%
-    gt::tab_header(title = title, subtitle = subtitle) %>%
-    gt::tab_style(style = cell_text(weight = "bold"),
-                  locations = cells_column_labels(colnames(.))) %>%
-    gt::tab_style(style = list(cell_fill(color = "royalblue"),
-                               cell_text(color = "white",weight = "bold")),
-                  locations = cells_title(groups = c("title")))
-  y= y %>% tab_options(table.width = px(width),table.font.size = pct(80))
-  return(y)
-}
+bd_txt <-
+  function(x,
+           title = "Grading",
+           subtitle = "-",
+           width = 700) {
+    if (nchar(gsub(" ", "", subtitle)) == 0) {
+      subtitle <- "-"
+    }
+    y <- x %>% gt::gt() %>%
+      gt::tab_header(title = title, subtitle = subtitle) %>%
+      gt::tab_style(style = cell_text(weight = "bold"),
+                    locations = cells_column_labels(colnames(.))) %>%
+      gt::tab_style(style = list(
+        cell_fill(color = "royalblue"),
+        cell_text(color = "white", weight = "bold")
+      ),
+      locations = cells_title(groups = c("title")))
+    y = y %>% tab_options(table.width = px(width),
+                          table.font.size = pct(80))
+    return(y)
+  }
 
-bd_lo <- function(x,width=700) {
+bd_lo <- function(x, width = 700) {
   y <- x %>% gt::gt(rowname_col = rownames(.)) %>%
     gt::tab_header(title = "Learning Objectives",
                    subtitle = "Desired Outcomes Sought for Mastery of Material") %>%
     gt::tab_style(style = cell_text(weight = "bold"),
                   locations = cells_column_labels(colnames(.))) %>%
-    gt::tab_style(style = list(cell_fill(color = "royalblue"),
-                               cell_text(color = "white",weight = "bold")),
-                  locations = cells_title(groups = c("title")))
-  y= y %>% tab_options(table.width = px(width),table.font.size = pct(80))
+    gt::tab_style(style = list(
+      cell_fill(color = "royalblue"),
+      cell_text(color = "white", weight = "bold")
+    ),
+    locations = cells_title(groups = c("title")))
+  y = y %>% tab_options(table.width = px(width),
+                        table.font.size = pct(80))
   return(y)
 }
 
@@ -85,15 +105,19 @@ In a concise .Rmd using `tidy` (i.e. no `xts`), do the following:
 At this point in the class, more differentiation will be applied in grading. This is an advanced class in your learning in your degree and/or professional workplace and you are judged both on absolute and relative standards versus your peers.
 
 ```{r, echo=F,include=TRUE, fig.height=3}
-tibble(Competency=c("Summary",
-                    "Presentation",
-                    "Accuracy of code and results"),
-           Measure=c("Ability to distill and communicate the key findings.",
-                   "Professionally rendered presentations. Clean document of unnecessary clutter not relevant to the story. I am a business leader and interested in the story, not how you got to it.",
-                   "No errors in computations."),
-           Score=c("2 points",
-                   "2 points",
-                   "6 points")) %>% bd_lo()
+tibble(
+  Competency = c("Summary",
+                 "Presentation",
+                 "Accuracy of code and results"),
+  Measure = c(
+    "Ability to distill and communicate the key findings.",
+    "Professionally rendered presentations. Clean document of unnecessary clutter not relevant to the story. I am a business leader and interested in the story, not how you got to it.",
+    "No errors in computations."
+  ),
+  Score = c("2 points",
+            "2 points",
+            "6 points")
+) %>% bd_lo()
 ```
 
 ## Solution Hint
