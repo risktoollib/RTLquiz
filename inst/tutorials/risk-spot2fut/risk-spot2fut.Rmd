@@ -20,19 +20,22 @@ fwd <- function(S0 = 1000,
 <br>
 <br>
 
-Internalizing an Equation: Spot to Forward Equation.
+**Internalizing an Equation: Spot to Forward Equation.**
+
++ **The quality of learning is defined as understanding, not remembering.**
++ **Being mindful, or in the conversation, supports understanding.**
++ **Reading text(book)s primarily supports remembering.**
++ **Creating your own questions allows you to internalize learning and improve recall in other contexts.**
 
 $$\begin{aligned}
 F = S e^{(r-d)*T}\quad
 \end{aligned}$$
 
-
-
 ## Directional Relationship
 
 ```{r IEq1}
 learnr::quiz(
-  learnr::question("Which statement(s) is(are) correct? The value of F increases when:",
+  learnr::question("Which statement(s) is (are) correct? The value of F increases when:",
     learnr::answer("S, d and T increase."),
     learnr::answer("S and T increase.",correct = T),
     learnr::answer("S, r and T increase.",correct = T),
