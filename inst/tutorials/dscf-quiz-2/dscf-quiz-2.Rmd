@@ -127,17 +127,22 @@ tibble(
 **Your final output should answer the questions instead of replicating the hints.**
 
 ```{r, echo = F}
-from = "2013-01-01"
-to = "2018-01-01"
+from = "2008-01-01"
+from ="2011-01-31"
+#to = "2021-01-31"
+
+r = "adjusted"
+#r = "close"
 
 library(tidyquant)
 ret <- tidyquant::tq_get(tickers,
               get  = "stock.prices",
               from = from,
               to = to) %>% 
-  dplyr::select(date, symbol,close) %>% 
+  dplyr::transmute(date, symbol,value = get(r)) %>% 
   dplyr::group_by(symbol) %>% 
-  dplyr::mutate(ret = log(close / dplyr::lag(close))) %>% stats::na.omit() 
+#  dplyr::mutate(ret = log(close / dplyr::lag(close))) %>% stats::na.omit() 
+  dplyr::mutate(ret = log(value / dplyr::lag(value))) %>% stats::na.omit() 
 ```
 
 
@@ -160,7 +165,7 @@ ret %>%
                    skew = moments::skewness(ret),
                    kurt = moments::kurtosis(ret),
                    .groups = "keep") %>% 
-  dplyr::mutate(dplyr::across(where(is.numeric), round, 4)) %>% 
+  dplyr::mutate(dplyr::across(where(is.numeric), round, 5)) %>% 
   dplyr::ungroup() %>% 
   bd_txt(title = "Distribution Moments", subtitle = "") %>% 
   gt::fmt_number(columns = vars(skew,kurt), decimals = 2) %>% 

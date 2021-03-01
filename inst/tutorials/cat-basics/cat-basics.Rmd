@@ -105,7 +105,9 @@ market %>% gt::gt() %>% cols_align(align = "center")
 d <-  sample(2:3,1)
 lots <- sum(market$bid.lots[1:d])
 limit <- s - 0.5 
-tmp <- market %>% dplyr::filter(bids >= limit)# %>% 
+tmp <- market %>% 
+  dplyr::mutate(clots=cumsum(bid.lots)) %>% 
+  dplyr::filter(bids >= limit, clots <= lots)# %>% 
   #dplyr::mutate(cum = dplyr::lag(bid.lots))
 #tmp$cum[1] <- 0
 #tmp %>% dplyr::mutate(cum = cumsum(cum))
@@ -115,10 +117,10 @@ cc <- weighted.mean(tmp$bids,tmp$bid.lots)
 learnr::quiz(
   learnr::question(paste0("You place a limit order to sell ",lots," lots at ",format(round(limit, 2), nsmall = 2),". What price do you get filled at and how many lots are executed?"),
     learnr::answer(paste0(round(sum(tmp$bid.lots),2)," lots executed at ",format(round(cc, 2), nsmall = 2)), correct = TRUE),
-    learnr::answer(paste0(round(sum(tmp$bid.lots),2)," lots executed at ",format(round(mean(tmp$bids), 2), nsmall = 2))),
-    learnr::answer(paste0(round(lots,2)," lots executed at ",format(round(cc, 2), nsmall = 2))),
+    #learnr::answer(paste0(round(sum(tmp$bid.lots),2)," lots executed at ",format(round(mean(tmp$bids), 2), nsmall = 2))),
+    learnr::answer(paste0(round(lots,2)," lots executed at ",format(round(tmp$bids[1], 2), nsmall = 2))),
     learnr::answer(paste0(round(lots,2)," lots executed at ",format(round(limit, 2), nsmall = 2))),
-    random_answer_order = F
+    random_answer_order = T
   )
 )
 ```
