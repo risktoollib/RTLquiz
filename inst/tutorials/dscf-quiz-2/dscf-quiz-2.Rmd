@@ -111,7 +111,7 @@ tibble(
                  "Accuracy of code and results"),
   Measure = c(
     "Ability to distill and communicate the key findings.",
-    "Professionally rendered presentations. Clean document of unnecessary clutter not relevant to the story. I am a business leader and interested in the story, not how you got to it.",
+    "Professionally rendered presentations. Clean document of unnecessary clutter not relevant to the story. Assume I am a business leader and interested in the story, not how you got to it. Format properly your charts and tables.",
     "No errors in computations."
   ),
   Score = c("2 points",
@@ -122,11 +122,9 @@ tibble(
 
 ## Solution Hint
 
-> This is meant to provide you with PARTIAL insights and as such we use different time periods for display purposes i.e. the numbers will not match the actual solution. Neither is it a representation of the final output.    
+Not available.
 
-**Your final output should answer the questions instead of replicating the hints.**
-
-```{r, echo = F}
+```{r, echo = F, eval=FALSE}
 from = "2008-01-01"
 from ="2011-01-31"
 #to = "2021-01-31"
@@ -146,7 +144,7 @@ ret <- tidyquant::tq_get(tickers,
 ```
 
 
-```{r, echo = F}
+```{r, echo = F, eval=FALSE}
 ret %>% ggplot(aes(x = ret, col = symbol, fill = symbol)) + 
   geom_histogram(aes(y = stat(width*density)), bins = 200,show.legend = FALSE) +
   geom_rug(col = "black") +
@@ -157,7 +155,7 @@ ret %>% ggplot(aes(x = ret, col = symbol, fill = symbol)) +
        y = "Density", x = "Log Returns")
 ```
 
-```{r, echo=F, fig.height=3}
+```{r, echo=F, fig.height=3, eval=FALSE}
 library(moments)
 ret %>% 
   dplyr::summarise(mu = mean(ret),
@@ -199,12 +197,12 @@ ret.wide %>% dplyr::mutate(cor20 = cor20(VNQ,SPY),
   labs(title = fig.title,x = "",y = "")
 ```
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, eval=FALSE}
 library(broom)
 ret %>% dplyr::do(broom::tidy(tseries::jarque.bera.test(.$ret)))
 ```
 
-```{r, echo = F}
+```{r, echo = F, eval=FALSE}
 spy <- ret %>% dplyr::filter(symbol == "SPY") %>% ungroup() %>% dplyr::select(ret)
 stats::ks.test(spy, y = "pnorm")
 #stats::ks.test(rnorm(10000), y = "pnorm")
