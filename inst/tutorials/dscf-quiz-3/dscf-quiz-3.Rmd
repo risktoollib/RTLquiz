@@ -71,7 +71,7 @@ The ask consists in demonstrating your ability to explain the performance of `NA
 
 In a concise .Rmd (i.e. no `flexdashboards`), follow the workflow in the class note module on multivariate regressions.
 
-1. Extract data from `r from` to `r to` and compute daily `log()` returns.
+1. Extract data from `r from` to `r to` and compute daily `log()` returns.You do NOT need to print data wrangling in any final document.
 2. Provide a correlation matrix and/or pairs plot and comment on whether and where you see potential issues with multicollinearity.
 3. Compute regressions by recursively adding independent variables.
 4. Compute the Variance Inflation Factor ("VIF") for all your regressions.
