@@ -1,6 +1,7 @@
 # usethis::use_readme_md()
 #usethis::use_package("PerformanceAnalytics")
 # usethis::use_pipe()
+#usethis::use_data_raw()
 library(tidyverse)
 library(tidyquant)
 sp500_desc <- tq_index("SP500") %>% dplyr::filter(!stringr::str_detect(symbol,"BRK.B|BF.B|KEYS|WEC|XRAY"))

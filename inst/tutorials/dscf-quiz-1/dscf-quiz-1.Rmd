@@ -66,7 +66,6 @@ The task consists in:
 
 ## Timeline and Format
 
-+ You have one week from the time your boss asks i.e. when the Prof assigns it to you.
 + Send the results as a `.Rmd` and **properly rendering** `.html` via email before the next class.
 + Name your file `Quiz1_<lastname>_<firstname>`.
 
@@ -77,7 +76,7 @@ tibble(Competency=c("RMardown",
                     "Presentation",
                     "Results"),
            Measure=c(".Rmd renders without errors.",
-                   "It is readable as it would in a Word document and clear without unnecessary code being displayed.",
+                   "It is readable as it would in a Word document and clear without unnecessary code and warnings being displayed.",
                    "Correct results"),
            Score=c("3 points",
                    "2 points",
@@ -87,26 +86,26 @@ tibble(Competency=c("RMardown",
 ## Stock Universe 
 
 ```{r, echo = F}
-library(rvest)
-url = "https://www.slickcharts.com/sp500"
-html <- xml2::read_html(url)
-x = html %>% html_table(.,fill=T) %>% .[[1]] %>% as_tibble() %>% 
-  dplyr::filter(dplyr::row_number() <= 5 | dplyr::row_number() %in% c(100,200,300,400,450)) %>% 
-  dplyr::select(Company, Symbol)
-x %>% bd_txt(title = "Companies and Symbols", subtitle = "use the relevant API from the Data Wrangling Module")  
+# library(rvest)
+# url = "https://www.slickcharts.com/sp500"
+# html <- xml2::read_html(url)
+# x = html %>% html_table(.,fill=T) %>% .[[1]] %>% as_tibble() %>% 
+#   dplyr::filter(dplyr::row_number() <= 5 | dplyr::row_number() %in% c(100,200,300,400,450)) %>% 
+#   dplyr::select(Company, Symbol)
+# x %>% bd_txt(title = "Companies and Symbols", subtitle = "use the relevant API from the Data Wrangling Module")
+
+set.seed(1604)
+r <- replicate(3,as.integer(runif(10,1,500)))
+x <- RTLquiz::sp500_desc %>% 
+  dplyr::select(Company = company, Symbol = symbol) %>% dplyr::slice(r[,ceiling(lubridate::month(Sys.Date()) / 4)])
+x %>% bd_txt(title = "Companies and Symbols", subtitle = "use the relevant API from the Data Wrangling Module") #%>% gt::cols_width(starts_with("C") ~ px(150))
 ```
 
 ## Solution Hint
 
-If you ask your manager or leader it comes as a 2 points penalty.
-
-But... in the real world you can for free:
-
 + Refer to the training material you were provided,
 + Google it, or
 + Ask your peers for help.
-
-Your choice!
 
 ```{r, echo = F, eval=F}
 library(tidyquant)
