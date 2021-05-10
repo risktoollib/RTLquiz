@@ -5,10 +5,10 @@
 library(tidyverse)
 library(tidyquant)
 sp500_desc <- tq_index("SP500") %>% dplyr::filter(!stringr::str_detect(symbol,"BRK.B|BF.B|KEYS|WEC|XRAY"))
-sp500_prices <- tidyquant::tq_get("AIG",
+sp500_prices <- tidyquant::tq_get(sp500_desc$symbol,
                                   get  = "stock.prices",
                                   from = "2008-08-01",
-                                  to = "2088-09-30") %>%
+                                  to = Sys.Date()) %>%
   stats::na.omit() %>%
   dplyr::group_by(symbol) %>%
   dplyr::select(symbol, date, close = adjusted) %>%
