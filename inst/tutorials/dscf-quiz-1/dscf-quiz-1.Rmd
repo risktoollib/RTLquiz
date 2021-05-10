@@ -78,8 +78,8 @@ tibble(Competency=c("RMardown",
            Measure=c(".Rmd renders without errors.",
                    "It is readable as it would in a Word document and clear without unnecessary code and warnings being displayed.",
                    "Correct results"),
-           Score=c("3 points",
-                   "2 points",
+           Score=c("2 points",
+                   "3 points",
                    "5 points")) %>% bd_lo()
 ```
 
