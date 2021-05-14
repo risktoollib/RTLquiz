@@ -107,7 +107,7 @@ x %>% bd_txt(title = "Companies and Symbols", subtitle = "use the relevant API f
 + Google it, or
 + Ask your peers for help.
 
-```{r, echo = F, eval=F}
+```{r, echo = F, eval=T}
 library(tidyquant)
 tidyquant::tq_get(x$Symbol,
               get  = "stock.prices",
