@@ -5,7 +5,7 @@ Build to support delivery of:
 + Finance classes at the [Alberta School of Business](https://www.ualberta.ca/business/index.html).
 + Corporate workshop through [Rpanda Training Solutions](rpanda.co).
 
-**Theis package is in an ongoing development state.**
+**This package is in an ongoing development state.**
 
 ## How to Use
 
