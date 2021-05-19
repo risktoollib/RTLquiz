@@ -124,9 +124,8 @@ tibble(
 
 Not available.
 
-```{r, echo = F, eval=FALSE}
-from = "2008-01-01"
-from ="2011-01-31"
+```{r, echo = T, eval=T}
+#from = "2008-01-01"
 #to = "2021-01-31"
 
 r = "adjusted"
@@ -144,18 +143,19 @@ ret <- tidyquant::tq_get(tickers,
 ```
 
 
-```{r, echo = F, eval=FALSE}
+```{r, r, echo = T, eval=T}
 ret %>% ggplot(aes(x = ret, col = symbol, fill = symbol)) + 
   geom_histogram(aes(y = stat(width*density)), bins = 200,show.legend = FALSE) +
   geom_rug(col = "black") +
   facet_grid(symbol ~ .) +
+  coord_cartesian(xlim = c(-max(abs(ret$ret)),max(abs(ret$ret))))+
   scale_y_continuous(labels = scales::percent_format(accuracy = 1)) + 
   scale_x_continuous(labels = scales::percent_format(accuracy = 1)) +
   labs(title = "Log Returns Density Histogram",
        y = "Density", x = "Log Returns")
 ```
 
-```{r, echo=F, fig.height=3, eval=FALSE}
+```{r, echo = T, eval=T}
 library(moments)
 ret %>% 
   dplyr::summarise(mu = mean(ret),
@@ -166,21 +166,23 @@ ret %>%
   dplyr::mutate(dplyr::across(where(is.numeric), round, 5)) %>% 
   dplyr::ungroup() %>% 
   bd_txt(title = "Distribution Moments", subtitle = "") %>% 
-  gt::fmt_number(columns = vars(skew,kurt), decimals = 2) %>% 
-  gt::fmt_percent(columns = vars(mu, sigma), decimals = 3)
+  gt::fmt_number(columns = c(skew,kurt), decimals = 2) %>% 
+  gt::fmt_percent(columns = c(mu, sigma), decimals = 3)
 ```
 
 
-```{r, echo = F, eval=FALSE}
+```{r, echo = T, eval=T}
 library(PerformanceAnalytics)
 ret.wide <- ret %>%  
   tidyr::pivot_wider(date, names_from = symbol, values_from = ret) %>% 
   stats::na.omit() 
-ret.wide %>% timetk::tk_xts(rename_index = "date") %>% PerformanceAnalytics::chart.Correlation()
+ret.wide %>% 
+  timetk::tk_xts(rename_index = "date") %>% 
+  PerformanceAnalytics::chart.Correlation()
 ```
 
 
-```{r, echo = F, eval = F}
+```{r, echo = T, eval=T}
 fig.title = "Correlation Instability"
 library(tibbletime)
 cor20 <- tibbletime::rollify(~cor(.x, .y),window = 20)
@@ -197,12 +199,12 @@ ret.wide %>% dplyr::mutate(cor20 = cor20(VNQ,SPY),
   labs(title = fig.title,x = "",y = "")
 ```
 
-```{r, echo = FALSE, eval=FALSE}
+```{r, echo = T, eval=T}
 library(broom)
 ret %>% dplyr::do(broom::tidy(tseries::jarque.bera.test(.$ret)))
 ```
 
-```{r, echo = F, eval=FALSE}
+```{r, echo = T, eval=T}
 spy <- ret %>% dplyr::filter(symbol == "SPY") %>% ungroup() %>% dplyr::select(ret)
 stats::ks.test(spy, y = "pnorm")
 #stats::ks.test(rnorm(10000), y = "pnorm")
