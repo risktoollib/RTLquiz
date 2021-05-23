@@ -116,13 +116,27 @@ ret <- tidyquant::tq_get(tickers,
   stats::na.omit()
 ```
 
+```{r, echo = F, eval = F}
+library(gt)
+ret %>% 
+  dplyr::select(-date,-NANR) %>%  # exclude date and outcome, leave only predictors 
+  purrr::map(~lm(NANR ~ .x, data = ret)) %>% 
+  purrr::map(summary) %>% 
+  purrr::map_dbl("r.squared") %>% 
+  tibble::tibble(Predictors = names(.),r.squared = .) %>% 
+  dplyr::arrange(desc(.[[2]])) %>% 
+  gt() %>% 
+  gt::fmt_percent(columns = !matches("Predictors"), decimals = 1)
+```
+
+
 
 ```{r, echo = F, eval=F}
 fit1 <- stats::lm(NANR ~ SPY,ret)
 fit2 <- stats::lm(NANR ~ SPY + USO,ret)
-fit3 <- stats::lm(NANR ~ SPY + USO + UNG,ret)
-fit4 <- stats::lm(NANR ~ SPY + USO + UNG + GLD,ret)
-fit5 <- stats::lm(NANR ~ SPY + USO + UNG + GLD + SLV,ret)
+fit3 <- stats::lm(NANR ~ SPY + USO + SLV,ret)
+fit4 <- stats::lm(NANR ~ SPY + USO + SLV + GLD,ret)
+fit5 <- stats::lm(NANR ~ SPY + USO + SLV + GLD + UNG,ret)
 ```
 
 ```{r, echo = F, eval=F}
@@ -143,14 +157,26 @@ fit1 %>% broom::glance() %>%
 ```
 
 ```{r, echo = F, eval=F}
-car::vif(fit2)
-car::vif(fit3)
-car::vif(fit4)
-car::vif(fit5)
+dplyr::bind_rows(car::vif(fit2),
+                 car::vif(fit3),
+                 car::vif(fit4),
+                 car::vif(fit5)) %>% 
+  gt() %>% 
+  gt::fmt_number(columns = everything(),decimals = 3) %>% 
+  gt::tab_style(style = list(cell_fill(color = "lightgreen"),
+                                 cell_text(weight = "bold")),
+                    locations = cells_body(columns = everything(),
+                                           rows = everything() <= 2
+                                           )
+  )
 ```
 
 ```{r, echo = F, eval=F}
-fitfinal <- stats::lm(NANR ~ SPY + USO + GLD,ret)
-summary(fitfinal)
+# possible reasonable recommendations
+summary(stats::lm(NANR ~ SPY + USO + GLD,ret))
+summary(stats::lm(NANR ~ SPY + USO + SLV,ret))
+# also possible if purely statistics but not trading
+summary(stats::lm(NANR ~ SPY + USO + SLV + GLD,ret))
+
 ```
 
