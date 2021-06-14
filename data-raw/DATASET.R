@@ -4,6 +4,7 @@
 #usethis::use_data_raw()
 library(tidyverse)
 library(tidyquant)
+library(jsonlite)
 sp500_desc <- tq_index("SP500") %>% dplyr::filter(!stringr::str_detect(symbol,"BRK.B|BF.B|KEYS|WEC|XRAY"))
 sp500_prices <- tidyquant::tq_get(sp500_desc$symbol,
                                   get  = "stock.prices",
@@ -21,7 +22,7 @@ usethis::use_data(sp500_prices, overwrite = T)
 
 # http://www.trumptwitterarchive.com/archive
 # use geany text editor in Linux for very large files
-twtrump <- fromJSON("./data-raw/twtrump.json")
+twtrump <- jsonlite::fromJSON("./data-raw/twtrump.json")
 twtrump <- twtrump %>%
    dplyr::mutate(created_at = as.POSIXct(created_at,tz = "GMT",format=c("%a %b %d %H:%M:%S +0000 %Y"))) %>%
    dplyr:::rename(favoriteCount = favorite_count, created = created_at, id = id_str) %>%
